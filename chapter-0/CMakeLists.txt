@@ -1,6 +1,5 @@
-
 # Add source to this project's executable.
-add_executable (chapter_0 
+add_executable (chapter_0
   main.cpp
   vk_engine.cpp
   vk_engine.h
@@ -15,4 +14,5 @@ target_include_directories(chapter_0 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_link_libraries(chapter_0 vkbootstrap vma glm tinyobjloader imgui stb_image)
 
-target_link_libraries(chapter_0 Vulkan::Vulkan sdl2)
+target_link_libraries(chapter_0 Vulkan::Vulkan)
+target_compile_features(chapter_0 PRIVATE cxx_std_17)

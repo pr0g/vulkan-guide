@@ -9,6 +9,7 @@
 #include <deque>
 #include <vk_mesh.h>
 #include <unordered_map>
+#include <string>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -125,10 +126,10 @@ public:
 	VkPhysicalDeviceProperties _gpuProperties;
 
 	FrameData _frames[FRAME_OVERLAP];
-	
+
 	VkQueue _graphicsQueue;
 	uint32_t _graphicsQueueFamily;
-	
+
 	VkRenderPass _renderPass;
 
 	VkSurfaceKHR _surface;
@@ -137,10 +138,10 @@ public:
 
 	std::vector<VkFramebuffer> _framebuffers;
 	std::vector<VkImage> _swapchainImages;
-	std::vector<VkImageView> _swapchainImageViews;	
+	std::vector<VkImageView> _swapchainImageViews;
 
     DeletionQueue _mainDeletionQueue;
-	
+
 	VmaAllocator _allocator; //vma lib allocator
 
 	//depth resources
@@ -169,7 +170,7 @@ public:
 
 	//run main loop
 	void run();
-	
+
 	FrameData& get_current_frame();
 	FrameData& get_last_frame();
 

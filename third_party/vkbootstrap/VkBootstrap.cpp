@@ -634,7 +634,7 @@ detail::Result<Instance> InstanceBuilder::build () const {
         added_window_exts = check_add_window_ext ("VK_KHR_xlib_surface") || added_window_exts;
         added_window_exts = check_add_window_ext ("VK_KHR_wayland_surface") || added_window_exts;
 #elif defined(__APPLE__)
-		bool added_window_exts = check_add_window_ext ("VK_KHR_metal_surface");
+		bool added_window_exts = check_add_window_ext ("VK_MVK_macos_surface");
 #endif
 		if (!khr_surface_added || !added_window_exts)
 			return make_error_code (InstanceError::windowing_extensions_not_present);
@@ -1349,6 +1349,7 @@ detail::Result<Device> DeviceBuilder::build () const {
 	}
 
 	std::vector<const char*> extensions = info.extensions_to_enable;
+	extensions.push_back({"VK_KHR_portability_subset"});
 	if (info.surface != VK_NULL_HANDLE || info.defer_surface_initialization)
 		extensions.push_back ({ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
 

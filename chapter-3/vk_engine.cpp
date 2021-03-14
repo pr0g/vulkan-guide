@@ -34,11 +34,11 @@ using namespace std;
 
 void VulkanEngine::init()
 {
-	// We initialize SDL and create a window with it. 
+	// We initialize SDL and create a window with it.
 	SDL_Init(SDL_INIT_VIDEO);
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN);
-	
+
 	_window = SDL_CreateWindow(
 		"Vulkan Engine",
 		SDL_WINDOWPOS_UNDEFINED,
@@ -63,19 +63,19 @@ void VulkanEngine::init()
 	init_pipelines();
 
 	load_meshes();
-	
+
 	//everything went fine
 	_isInitialized = true;
 }
 void VulkanEngine::cleanup()
-{	
+{
 	if (_isInitialized) {
-		
+
 		//make sure the gpu has stopped doing its things
 		vkDeviceWaitIdle(_device);
 
 		_mainDeletionQueue.flush();
-		
+
 
 		vkDestroySurfaceKHR(_instance, _surface, nullptr);
 
@@ -117,7 +117,7 @@ void VulkanEngine::draw()
 	VkClearValue depthClear;
 	depthClear.depthStencil.depth = 1.f;
 
-	//start the main renderpass. 
+	//start the main renderpass.
 	//We will use the clear color from above, and the framebuffer of the index the swapchain gave us
 	VkRenderPassBeginInfo rpInfo = vkinit::renderpass_begin_info(_renderPass, _windowExtent, _framebuffers[swapchainImageIndex]);
 
@@ -157,7 +157,7 @@ void VulkanEngine::draw()
 	//upload the matrix to the gpu via pushconstants
 	vkCmdPushConstants(cmd, _meshPipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(MeshPushConstants), &constants);
 
-	
+
 
 	//we can now draw the mesh
 	vkCmdDraw(cmd, _monkeyMesh._vertices.size(), 1, 0, 0);
@@ -167,7 +167,7 @@ void VulkanEngine::draw()
 	//finalize the command buffer (we can no longer add commands, but it can now be executed)
 	VK_CHECK(vkEndCommandBuffer(cmd));
 
-	//prepare the submission to the queue. 
+	//prepare the submission to the queue.
 	//we want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
 	//we will signal the _renderSemaphore, to signal that rendering has finished
 
@@ -188,7 +188,7 @@ void VulkanEngine::draw()
 
 	//prepare present
 	// this will put the image we just rendered to into the visible window.
-	// we want to wait on the _renderSemaphore for that, 
+	// we want to wait on the _renderSemaphore for that,
 	// as its necessary that drawing commands have finished before the image is displayed to the user
 	VkPresentInfoKHR presentInfo = vkinit::present_info();
 
@@ -217,7 +217,7 @@ void VulkanEngine::run()
 		//Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
-			//close the window when user alt-f4s or clicks the X button			
+			//close the window when user alt-f4s or clicks the X button
 			if (e.type == SDL_QUIT)
 			{
 				bQuit = true;
@@ -252,13 +252,13 @@ void VulkanEngine::init_vulkan()
 
 	vkb::Instance vkb_inst = inst_ret.value();
 
-	//grab the instance 
+	//grab the instance
 	_instance = vkb_inst.instance;
 	_debug_messenger = vkb_inst.debug_messenger;
 
 	SDL_Vulkan_CreateSurface(_window, _instance, &_surface);
 
-	//use vkbootstrap to select a gpu. 
+	//use vkbootstrap to select a gpu.
 	//We want a gpu that can write to the SDL surface and supports vulkan 1.2
 	vkb::PhysicalDeviceSelector selector{ vkb_inst };
 	vkb::PhysicalDevice physicalDevice = selector
@@ -418,7 +418,7 @@ void VulkanEngine::init_default_renderpass()
 	render_pass_info.pSubpasses = &subpass;
 	render_pass_info.dependencyCount = 1;
 	render_pass_info.pDependencies = &dependency;
-	
+
 	VK_CHECK(vkCreateRenderPass(_device, &render_pass_info, nullptr, &_renderPass));
 
 	_mainDeletionQueue.push_function([=]() {
@@ -487,7 +487,7 @@ void VulkanEngine::init_sync_structures()
 
 	VK_CHECK(vkCreateSemaphore(_device, &semaphoreCreateInfo, nullptr, &_presentSemaphore));
 	VK_CHECK(vkCreateSemaphore(_device, &semaphoreCreateInfo, nullptr, &_renderSemaphore));
-	
+
 	//enqueue the destruction of semaphores
 	_mainDeletionQueue.push_function([=]() {
 		vkDestroySemaphore(_device, _presentSemaphore, nullptr);
@@ -499,7 +499,7 @@ void VulkanEngine::init_sync_structures()
 void VulkanEngine::init_pipelines()
 {
 	VkShaderModule triangleFragShader;
-	if (!load_shader_module("../shaders/colored_triangle.frag.spv", &triangleFragShader))
+	if (!load_shader_module("shaders/colored_triangle.frag.spv", &triangleFragShader))
 	{
 		std::cout << "Error when building the triangle fragment shader module" << std::endl;
 	}
@@ -508,7 +508,7 @@ void VulkanEngine::init_pipelines()
 	}
 
 	VkShaderModule triangleVertexShader;
-	if (!load_shader_module("../shaders/colored_triangle.vert.spv", &triangleVertexShader))
+	if (!load_shader_module("shaders/colored_triangle.vert.spv", &triangleVertexShader))
 	{
 		std::cout << "Error when building the triangle vertex shader module" << std::endl;
 	}
@@ -518,7 +518,7 @@ void VulkanEngine::init_pipelines()
 
 	//compile colored triangle modules
 	VkShaderModule redTriangleFragShader;
-	if (!load_shader_module("../shaders/triangle.frag.spv", &redTriangleFragShader))
+	if (!load_shader_module("shaders/triangle.frag.spv", &redTriangleFragShader))
 	{
 		std::cout << "Error when building the triangle fragment shader module" << std::endl;
 	}
@@ -527,7 +527,7 @@ void VulkanEngine::init_pipelines()
 	}
 
 	VkShaderModule redTriangleVertShader;
-	if (!load_shader_module("../shaders/triangle.vert.spv", &redTriangleVertShader))
+	if (!load_shader_module("shaders/triangle.vert.spv", &redTriangleVertShader))
 	{
 		std::cout << "Error when building the triangle vertex shader module" << std::endl;
 	}
@@ -604,7 +604,7 @@ void VulkanEngine::init_pipelines()
 	_redTrianglePipeline = pipelineBuilder.build_pipeline(_device, _renderPass);
 
 
-	
+
 
 	//build the mesh pipeline
 
@@ -624,7 +624,7 @@ void VulkanEngine::init_pipelines()
 
 
 	VkShaderModule meshVertShader;
-	if (!load_shader_module("../shaders/tri_mesh_pushconstants.vert.spv", &meshVertShader))
+	if (!load_shader_module("shaders/tri_mesh_pushconstants.vert.spv", &meshVertShader))
 	{
 		std::cout << "Error when building the triangle vertex shader module" << std::endl;
 	}
@@ -795,7 +795,7 @@ void VulkanEngine::load_meshes()
 	//we dont care about the vertex normals
 
 	//load the monkey
-	_monkeyMesh.load_from_obj("../assets/monkey_smooth.obj");
+	_monkeyMesh.load_from_obj("assets/monkey_smooth.obj");
 
 	upload_mesh(_triangleMesh);
 	upload_mesh(_monkeyMesh);

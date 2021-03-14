@@ -34,11 +34,11 @@ using namespace std;
 
 void VulkanEngine::init()
 {
-	// We initialize SDL and create a window with it. 
+	// We initialize SDL and create a window with it.
 	SDL_Init(SDL_INIT_VIDEO);
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_VULKAN);
-	
+
 	_window = SDL_CreateWindow(
 		"Vulkan Engine",
 		SDL_WINDOWPOS_UNDEFINED,
@@ -62,7 +62,7 @@ void VulkanEngine::init()
 
 	init_descriptors();
 
-	init_pipelines();	
+	init_pipelines();
 
 	load_meshes();
 
@@ -71,9 +71,9 @@ void VulkanEngine::init()
 	_isInitialized = true;
 }
 void VulkanEngine::cleanup()
-{	
+{
 	if (_isInitialized) {
-		
+
 		//make sure the gpu has stopped doing its things
 		vkDeviceWaitIdle(_device);
 
@@ -91,7 +91,7 @@ void VulkanEngine::cleanup()
 
 void VulkanEngine::draw()
 {
-	
+
 	//wait until the gpu has finished rendering the last frame. Timeout of 1 second
 	VK_CHECK(vkWaitForFences(_device, 1, &get_current_frame()._renderFence, true, 1000000000));
 	VK_CHECK(vkResetFences(_device, 1, &get_current_frame()._renderFence));
@@ -120,7 +120,7 @@ void VulkanEngine::draw()
 	VkClearValue depthClear;
 	depthClear.depthStencil.depth = 1.f;
 
-	//start the main renderpass. 
+	//start the main renderpass.
 	//We will use the clear color from above, and the framebuffer of the index the swapchain gave us
 	VkRenderPassBeginInfo rpInfo = vkinit::renderpass_begin_info(_renderPass, _windowExtent, _framebuffers[swapchainImageIndex]);
 
@@ -130,17 +130,17 @@ void VulkanEngine::draw()
 	VkClearValue clearValues[] = { clearValue, depthClear };
 
 	rpInfo.pClearValues = &clearValues[0];
-	
+
 	vkCmdBeginRenderPass(cmd, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	draw_objects(cmd, _renderables.data(), _renderables.size());	
+	draw_objects(cmd, _renderables.data(), _renderables.size());
 
 	//finalize the render pass
 	vkCmdEndRenderPass(cmd);
 	//finalize the command buffer (we can no longer add commands, but it can now be executed)
 	VK_CHECK(vkEndCommandBuffer(cmd));
 
-	//prepare the submission to the queue. 
+	//prepare the submission to the queue.
 	//we want to wait on the _presentSemaphore, as that semaphore is signaled when the swapchain is ready
 	//we will signal the _renderSemaphore, to signal that rendering has finished
 
@@ -161,7 +161,7 @@ void VulkanEngine::draw()
 
 	//prepare present
 	// this will put the image we just rendered to into the visible window.
-	// we want to wait on the _renderSemaphore for that, 
+	// we want to wait on the _renderSemaphore for that,
 	// as its necessary that drawing commands have finished before the image is displayed to the user
 	VkPresentInfoKHR presentInfo = vkinit::present_info();
 
@@ -190,7 +190,7 @@ void VulkanEngine::run()
 		//Handle events on queue
 		while (SDL_PollEvent(&e) != 0)
 		{
-			//close the window when user alt-f4s or clicks the X button			
+			//close the window when user alt-f4s or clicks the X button
 			if (e.type == SDL_QUIT)
 			{
 				bQuit = true;
@@ -231,18 +231,18 @@ void VulkanEngine::init_vulkan()
 	auto inst_ret = builder.set_app_name("Example Vulkan Application")
 		.request_validation_layers(bUseValidationLayers)
 		.use_default_debug_messenger()
-		.require_api_version(1, 1, 0)		
+		.require_api_version(1, 1, 0)
 		.build();
 
 	vkb::Instance vkb_inst = inst_ret.value();
 
-	//grab the instance 
+	//grab the instance
 	_instance = vkb_inst.instance;
 	_debug_messenger = vkb_inst.debug_messenger;
 
 	SDL_Vulkan_CreateSurface(_window, _instance, &_surface);
 
-	//use vkbootstrap to select a gpu. 
+	//use vkbootstrap to select a gpu.
 	//We want a gpu that can write to the SDL surface and supports vulkan 1.2
 	vkb::PhysicalDeviceSelector selector{ vkb_inst };
 	vkb::PhysicalDevice physicalDevice = selector
@@ -407,7 +407,7 @@ void VulkanEngine::init_default_renderpass()
 	render_pass_info.pSubpasses = &subpass;
 	render_pass_info.dependencyCount = 1;
 	render_pass_info.pDependencies = &dependency;
-	
+
 	VK_CHECK(vkCreateRenderPass(_device, &render_pass_info, nullptr, &_renderPass));
 
 	_mainDeletionQueue.push_function([=]() {
@@ -448,7 +448,7 @@ void VulkanEngine::init_commands()
 
 	for (int i = 0; i < FRAME_OVERLAP; i++) {
 
-	
+
 		VK_CHECK(vkCreateCommandPool(_device, &commandPoolInfo, nullptr, &_frames[i]._commandPool));
 
 		//allocate the default command buffer that we will use for rendering
@@ -474,7 +474,7 @@ void VulkanEngine::init_sync_structures()
 
 	for (int i = 0; i < FRAME_OVERLAP; i++) {
 
-	
+
 
 	VK_CHECK(vkCreateFence(_device, &fenceCreateInfo, nullptr, &_frames[i]._renderFence));
 
@@ -499,18 +499,18 @@ void VulkanEngine::init_sync_structures()
 void VulkanEngine::init_pipelines()
 {
 	VkShaderModule colorMeshShader;
-	if (!load_shader_module("../shaders/default_lit.frag.spv", &colorMeshShader))
+	if (!load_shader_module("shaders/default_lit.frag.spv", &colorMeshShader))
 	{
 		std::cout << "Error when building the colored mesh shader" << std::endl;
 	}
 
 	VkShaderModule meshVertShader;
-	if (!load_shader_module("../shaders/tri_mesh_ssbo_col.vert.spv", &meshVertShader))
+	if (!load_shader_module("shaders/tri_mesh_ssbo_col.vert.spv", &meshVertShader))
 	{
 		std::cout << "Error when building the mesh vertex shader module" << std::endl;
 	}
 
-	
+
 	//build the stage-create-info for both vertex and fragment stages. This lets the pipeline know the shader modules per stage
 	PipelineBuilder pipelineBuilder;
 
@@ -589,7 +589,7 @@ void VulkanEngine::init_pipelines()
 	pipelineBuilder._vertexInputInfo.pVertexBindingDescriptions = vertexDescription.bindings.data();
 	pipelineBuilder._vertexInputInfo.vertexBindingDescriptionCount = vertexDescription.bindings.size();
 
-	
+
 	//build the mesh triangle pipeline
 	VkPipeline meshPipeline = pipelineBuilder.build_pipeline(_device, _renderPass);
 
@@ -724,7 +724,7 @@ void VulkanEngine::load_meshes()
 
 	//load the monkey
 	Mesh monkeyMesh{};
-	monkeyMesh.load_from_obj("../assets/monkey_smooth.obj");
+	monkeyMesh.load_from_obj("assets/monkey_smooth.obj");
 
 	upload_mesh(triMesh);
 	upload_mesh(monkeyMesh);
@@ -815,7 +815,7 @@ void VulkanEngine::draw_objects(VkCommandBuffer cmd,RenderObject* first, int cou
 	glm::mat4 view = glm::translate(glm::mat4(1.f), camPos);
 	//camera projection
 	glm::mat4 projection = glm::perspective(glm::radians(70.f), 1700.f / 900.f, 0.1f, 200.0f);
-	projection[1][1] *= -1;	
+	projection[1][1] *= -1;
 
 	GPUCameraData camData;
 	camData.proj = projection;
@@ -847,20 +847,20 @@ void VulkanEngine::draw_objects(VkCommandBuffer cmd,RenderObject* first, int cou
 
 	void* objectData;
 	vmaMapMemory(_allocator, get_current_frame().objectBuffer._allocation, &objectData);
-	
+
 	GPUObjectData* objectSSBO = (GPUObjectData*)objectData;
-	
+
 	for (int i = 0; i < count; i++)
 	{
 		RenderObject& object = first[i];
 		objectSSBO[i].modelMatrix = object.transformMatrix;
 	}
-	
+
 	vmaUnmapMemory(_allocator, get_current_frame().objectBuffer._allocation);
 
 	Mesh* lastMesh = nullptr;
 	Material* lastMaterial = nullptr;
-	
+
 	for (int i = 0; i < count; i++)
 	{
 		RenderObject& object = first[i];
@@ -873,7 +873,7 @@ void VulkanEngine::draw_objects(VkCommandBuffer cmd,RenderObject* first, int cou
 
 			uint32_t uniform_offset = pad_uniform_buffer_size(sizeof(GPUSceneData)) * frameIndex;
 			vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, object.material->pipelineLayout, 0, 1, &get_current_frame().globalDescriptor, 1, &uniform_offset);
-		
+
 			//object data descriptor
 			vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, object.material->pipelineLayout, 1, 1, &get_current_frame().objectDescriptor, 0, nullptr);
 		}
@@ -981,12 +981,12 @@ void VulkanEngine::init_descriptors()
 	pool_info.maxSets = 10;
 	pool_info.poolSizeCount = (uint32_t)sizes.size();
 	pool_info.pPoolSizes = sizes.data();
-	
-	vkCreateDescriptorPool(_device, &pool_info, nullptr, &_descriptorPool);	
-	
+
+	vkCreateDescriptorPool(_device, &pool_info, nullptr, &_descriptorPool);
+
 	VkDescriptorSetLayoutBinding cameraBind = vkinit::descriptorset_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,VK_SHADER_STAGE_VERTEX_BIT,0);
 	VkDescriptorSetLayoutBinding sceneBind = vkinit::descriptorset_layout_binding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 1);
-	
+
 	VkDescriptorSetLayoutBinding bindings[] = { cameraBind,sceneBind };
 
 	VkDescriptorSetLayoutCreateInfo setinfo = {};
@@ -1013,8 +1013,8 @@ void VulkanEngine::init_descriptors()
 	const size_t sceneParamBufferSize = FRAME_OVERLAP * pad_uniform_buffer_size(sizeof(GPUSceneData));
 
 	_sceneParameterBuffer = create_buffer(sceneParamBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VMA_MEMORY_USAGE_CPU_TO_GPU);
-	
-	
+
+
 
 
 
@@ -1060,7 +1060,7 @@ void VulkanEngine::init_descriptors()
 
 
 		VkWriteDescriptorSet cameraWrite = vkinit::write_descriptor_buffer(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, _frames[i].globalDescriptor,&cameraInfo,0);
-		
+
 		VkWriteDescriptorSet sceneWrite = vkinit::write_descriptor_buffer(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, _frames[i].globalDescriptor, &sceneInfo, 1);
 
 		VkWriteDescriptorSet objectWrite = vkinit::write_descriptor_buffer(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, _frames[i].objectDescriptor, &objectBufferInfo, 0);

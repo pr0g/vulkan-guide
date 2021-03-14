@@ -499,7 +499,7 @@ void VulkanEngine::init_sync_structures()
 void VulkanEngine::init_pipelines()
 {
 	VkShaderModule triangleFragShader;
-	if (!load_shader_module("../../shaders/colored_triangle.frag.spv", &triangleFragShader))
+	if (!load_shader_module("../shaders/colored_triangle.frag.spv", &triangleFragShader))
 	{
 		std::cout << "Error when building the triangle fragment shader module" << std::endl;
 	}
@@ -508,7 +508,7 @@ void VulkanEngine::init_pipelines()
 	}
 
 	VkShaderModule triangleVertexShader;
-	if (!load_shader_module("../../shaders/colored_triangle.vert.spv", &triangleVertexShader))
+	if (!load_shader_module("../shaders/colored_triangle.vert.spv", &triangleVertexShader))
 	{
 		std::cout << "Error when building the triangle vertex shader module" << std::endl;
 	}
@@ -518,7 +518,7 @@ void VulkanEngine::init_pipelines()
 
 	//compile colored triangle modules
 	VkShaderModule redTriangleFragShader;
-	if (!load_shader_module("../../shaders/triangle.frag.spv", &redTriangleFragShader))
+	if (!load_shader_module("../shaders/triangle.frag.spv", &redTriangleFragShader))
 	{
 		std::cout << "Error when building the triangle fragment shader module" << std::endl;
 	}
@@ -527,7 +527,7 @@ void VulkanEngine::init_pipelines()
 	}
 
 	VkShaderModule redTriangleVertShader;
-	if (!load_shader_module("../../shaders/triangle.vert.spv", &redTriangleVertShader))
+	if (!load_shader_module("../shaders/triangle.vert.spv", &redTriangleVertShader))
 	{
 		std::cout << "Error when building the triangle vertex shader module" << std::endl;
 	}
@@ -624,7 +624,7 @@ void VulkanEngine::init_pipelines()
 
 
 	VkShaderModule meshVertShader;
-	if (!load_shader_module("../../shaders/tri_mesh_pushconstants.vert.spv", &meshVertShader))
+	if (!load_shader_module("../shaders/tri_mesh_pushconstants.vert.spv", &meshVertShader))
 	{
 		std::cout << "Error when building the triangle vertex shader module" << std::endl;
 	}
@@ -795,7 +795,7 @@ void VulkanEngine::load_meshes()
 	//we dont care about the vertex normals
 
 	//load the monkey
-	_monkeyMesh.load_from_obj("../../assets/monkey_smooth.obj");
+	_monkeyMesh.load_from_obj("../assets/monkey_smooth.obj");
 
 	upload_mesh(_triangleMesh);
 	upload_mesh(_monkeyMesh);

@@ -1349,7 +1349,7 @@ detail::Result<Device> DeviceBuilder::build () const {
 	}
 
 	std::vector<const char*> extensions = info.extensions_to_enable;
-	extensions.push_back({"VK_KHR_portability_subset"});
+	// extensions.push_back({"VK_KHR_portability_subset"}); // temp disable
 	if (info.surface != VK_NULL_HANDLE || info.defer_surface_initialization)
 		extensions.push_back ({ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
 

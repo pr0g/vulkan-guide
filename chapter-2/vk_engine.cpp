@@ -230,6 +230,7 @@ void VulkanEngine::init_vulkan()
 	vkb::PhysicalDevice physicalDevice = selector
 		.set_minimum_version(1, 1)
 		.set_surface(_surface)
+		// .add_desired_extension("VK_KHR_portability_subset")
 		.select()
 		.value();
 

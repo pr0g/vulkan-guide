@@ -826,7 +826,7 @@ InstanceBuilder& InstanceBuilder::set_allocation_callbacks (VkAllocationCallback
 namespace detail {
 
 std::vector<const char*> check_device_extension_support (
-    VkPhysicalDevice device, std::vector<const char*> desired_extensions) {
+	VkPhysicalDevice device, std::vector<const char*> desired_extensions) {
 	std::vector<VkExtensionProperties> available_extensions;
 	auto available_extensions_ret = detail::get_vector<VkExtensionProperties> (
 	    available_extensions, detail::vulkan_functions ().fp_vkEnumerateDeviceExtensionProperties, device, nullptr);
@@ -1349,7 +1349,6 @@ detail::Result<Device> DeviceBuilder::build () const {
 	}
 
 	std::vector<const char*> extensions = info.extensions_to_enable;
-	// extensions.push_back({"VK_KHR_portability_subset"}); // temp disable
 	if (info.surface != VK_NULL_HANDLE || info.defer_surface_initialization)
 		extensions.push_back ({ VK_KHR_SWAPCHAIN_EXTENSION_NAME });
 

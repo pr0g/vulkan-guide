@@ -97,6 +97,7 @@ struct FrameData {
 struct UploadContext {
 	VkFence _uploadFence;
 	VkCommandPool _commandPool;
+	VkCommandBuffer _commandBuffer;
 };
 struct GPUCameraData{
 	glm::mat4 view;

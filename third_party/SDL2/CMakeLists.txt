@@ -14,6 +14,8 @@ if(NOT isMultiConfig)
   endif()
   set(build_type_dir ${CMAKE_BUILD_TYPE})
   set(build_type_arg -DCMAKE_BUILD_TYPE=$<CONFIG>)
+else ()
+  set(build_config_arg --config=$<CONFIG>)
 endif()
 
 ExternalProject_Add(

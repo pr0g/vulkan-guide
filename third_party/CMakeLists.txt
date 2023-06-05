@@ -50,3 +50,13 @@ target_link_libraries(imgui PUBLIC Vulkan::Vulkan SDL2::SDL2)
 target_compile_features(imgui PUBLIC cxx_std_17)
 
 target_include_directories(stb_image INTERFACE stb_image)
+
+if(WIN32)
+  # copy the SDL2.dll to the same folder as the executable
+  add_custom_command(
+    TARGET vkbootstrap
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL2::SDL2>
+            ${CMAKE_BINARY_DIR}/bin
+    VERBATIM)
+endif()

@@ -8,55 +8,38 @@ add_library(stb_image INTERFACE)
 
 add_library(tinyobjloader STATIC)
 
-target_sources(vkbootstrap PRIVATE
-  vkbootstrap/VkBootstrap.h
-  vkbootstrap/VkBootstrap.cpp
-  )
+target_sources(vkbootstrap PRIVATE vkbootstrap/VkBootstrap.h
+                                   vkbootstrap/VkBootstrap.cpp)
 
 target_include_directories(vkbootstrap PUBLIC vkbootstrap)
-target_link_libraries(vkbootstrap PUBLIC Vulkan::Vulkan $<$<BOOL:UNIX>:${CMAKE_DL_LIBS}>)
+target_link_libraries(vkbootstrap PUBLIC Vulkan::Vulkan
+                                         $<$<BOOL:UNIX>:${CMAKE_DL_LIBS}>)
 target_compile_features(vkbootstrap PRIVATE cxx_std_14)
 
-#both vma and glm and header only libs so we only need the include path
+# both vma and glm and header only libs so we only need the include path
 target_include_directories(vma INTERFACE vma)
 target_include_directories(glm INTERFACE glm)
 
-target_sources(tinyobjloader PRIVATE
-  tinyobjloader/tiny_obj_loader.h
-  tinyobjloader/tiny_obj_loader.cc
-  )
+target_sources(tinyobjloader PRIVATE tinyobjloader/tiny_obj_loader.h
+                                     tinyobjloader/tiny_obj_loader.cc)
 
 target_include_directories(tinyobjloader PUBLIC tinyobjloader)
-
-find_package(SDL2)
 
 add_library(imgui STATIC)
 
 target_include_directories(imgui PUBLIC imgui)
 
-target_sources(imgui PRIVATE
-  imgui/imgui.h
-  imgui/imgui.cpp
-
-  imgui/imgui_demo.cpp
-  imgui/imgui_draw.cpp
-  imgui/imgui_widgets.cpp
-
-  imgui/imgui_impl_vulkan.cpp
-  imgui/imgui_impl_sdl.cpp
-  )
+target_sources(
+  imgui
+  PRIVATE imgui/imgui.h
+          imgui/imgui.cpp
+          imgui/imgui_demo.cpp
+          imgui/imgui_draw.cpp
+          imgui/imgui_widgets.cpp
+          imgui/imgui_impl_vulkan.cpp
+          imgui/imgui_impl_sdl.cpp)
 
 target_link_libraries(imgui PUBLIC Vulkan::Vulkan SDL2::SDL2)
 target_compile_features(imgui PUBLIC cxx_std_17)
 
 target_include_directories(stb_image INTERFACE stb_image)
-
-if(WIN32)
-  # copy the SDL2.dll to the same folder as the executable
-  add_custom_command(
-    TARGET vkbootstrap
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:SDL2::SDL2>
-            ${CMAKE_BINARY_DIR}/bin
-    VERBATIM)
-endif()
